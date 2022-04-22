@@ -1,0 +1,8 @@
+/templates/
+/server.jar
+/h2db.mv.db
+/target/
+/src/test/
+/src/main/resources/
+/src/main/java/templater/
+/.idea/
