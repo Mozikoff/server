@@ -9,6 +9,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
+import servlets.ServerStatisticsServlet;
 import servlets.SignInServlet;
 import servlets.SignUpServlet;
 
@@ -30,7 +31,7 @@ public class Main {
 
         logger.info("Starting server on http://127.0.0.1:" + portString);
 
-        AccountServerI accountServer = new AccountServer(1);
+        AccountServerI accountServer = new AccountServer(10);
         AccountServerControllerMBean serverStatistics = new AccountServerController(accountServer);
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         ObjectName name = new ObjectName("ServerManager:type=AccountServerController");
@@ -41,16 +42,18 @@ public class Main {
 
         SignUpServlet signUpServlet = new SignUpServlet(accountService);
         SignInServlet signInServlet = new SignInServlet(accountService);
+        ServerStatisticsServlet statisticsServlet = new ServerStatisticsServlet(accountServer);
         WebSocketChatServlet chatServlet = new WebSocketChatServlet();
 
-        ServletContextHandler contex = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        contex.addServlet(new ServletHolder(signUpServlet), "/signup");
-        contex.addServlet(new ServletHolder(signInServlet), "/signin");
-        contex.addServlet(new ServletHolder(chatServlet), "/chat");
-        JettyWebSocketServletContainerInitializer.configure(contex, null);
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.addServlet(new ServletHolder(signUpServlet), SignUpServlet.PAGE_URL);
+        context.addServlet(new ServletHolder(signInServlet), SignInServlet.PAGE_URL);
+        context.addServlet(new ServletHolder(statisticsServlet), ServerStatisticsServlet.PAGE_URL);
+        context.addServlet(new ServletHolder(chatServlet), WebSocketChatServlet.PAGE_URL);
+        JettyWebSocketServletContainerInitializer.configure(context, null);
 
         Server server = new Server(port);
-        server.setHandler(contex);
+        server.setHandler(context);
 
         server.start();
         System.out.println("Server started");

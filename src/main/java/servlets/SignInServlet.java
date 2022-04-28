@@ -13,6 +13,7 @@ import java.util.Objects;
 public class SignInServlet extends HttpServlet {
     private final AccountService accountService;
     private final String NO_LOGIN_OR_PASS_PARAMS_MESSAGE = "Wrong request. No 'login' or 'password' parameters!";
+    public final static String PAGE_URL = "/signin";
 
     public SignInServlet(AccountService accountService) {
         this.accountService = accountService;
