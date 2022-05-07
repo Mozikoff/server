@@ -29,6 +29,12 @@ public class ReflectionHelper {
                 field.set(object, fieldValue);
             } else if (field.getType().equals(int.class)) {
                 field.set(object, Integer.decode(fieldValue));
+            } else if (field.getType().equals(float.class)) {
+                field.set(object, Float.valueOf(fieldValue));
+            } else if (field.getType().equals(double.class)) {
+                field.set(object, Double.valueOf(fieldValue));
+            } else if (field.getType().equals(boolean.class)) {
+                field.set(object, Boolean.valueOf(fieldValue));
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
             logger.error(e.getMessage());
